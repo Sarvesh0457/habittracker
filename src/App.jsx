@@ -39,14 +39,14 @@ export default function App() {
             return habit;
         });
 
-        const anyCompletedNow = updatedHabits.some(h => h.completedToday);
+        const allCompletedNow = updatedHabits.length > 0 && updatedHabits.every(h => h.completedToday);
 
-        if (anyCompletedNow && lastActive !== today) {
-            // First habit completed today! Streak goes up.
+        if (allCompletedNow && lastActive !== today) {
+            // ALL habits are done! Streak goes up.
             setGlobalStreak(prev => prev + 1);
             setLastActive(today);
-        } else if (!anyCompletedNow && lastActive === today) {
-            // User unticked everything for today, revert the streak
+        } else if (!allCompletedNow && lastActive === today) {
+            // User unticked something, they no longer have 100% completion today. Revert streak.
             setGlobalStreak(prev => Math.max(0, prev - 1));
             setLastActive(''); 
         }
