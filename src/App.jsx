@@ -1,10 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import Habits from './components/Habits';
 import Dashboard from './components/Dashboard';
 import Arena from './components/Arena';
 import { getLevelData } from './utils/gameLogic';
 
 const getTodayStr = () => new Date().toLocaleDateString('en-CA');
+
+const playSuccessSound = () => {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+    audio.volume = 0.3;
+    audio.play().catch(e => console.log("Audio play blocked by browser:", e));
+};
 
 export default function App() {
     const [habits, setHabits] = useState(() => JSON.parse(localStorage.getItem('habits')) || []);
@@ -13,6 +20,9 @@ export default function App() {
     const [lastActive, setLastActive] = useState(() => localStorage.getItem('lastActive') || '');
     const [activeTab, setActiveTab] = useState('habits');
 
+    const currentLevel = getLevelData(xp);
+    const prevLevelRef = useRef(currentLevel.level);
+
     useEffect(() => {
         localStorage.setItem('habits', JSON.stringify(habits));
         localStorage.setItem('xp', xp.toString());
@@ -20,12 +30,25 @@ export default function App() {
         localStorage.setItem('lastActive', lastActive);
     }, [habits, xp, globalStreak, lastActive]);
 
+    useEffect(() => {
+        if (currentLevel.level > prevLevelRef.current) {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#4f46e5', '#8b5cf6', '#38bdf8'] // Indigo, Violet, Light Blue
+            });
+        }
+        prevLevelRef.current = currentLevel.level;
+    }, [currentLevel.level]);
+
     const toggleHabit = (id) => {
         const today = getTodayStr();
         const updatedHabits = habits.map(habit => {
             if (habit.id === id) {
                 const isCompleting = !habit.completedToday;
                 setXp(prev => Math.max(0, prev + (isCompleting ? 50 : -50)));
+                if (isCompleting) playSuccessSound();
                 return { ...habit, completedToday: isCompleting };
             }
             return habit;
@@ -43,7 +66,34 @@ export default function App() {
     };
 
     const addHabit = (title) => setHabits([...habits, { id: Date.now(), title, completedToday: false }]);
-    const currentLevel = getLevelData(xp);
+
+    // 🛠️ DEV TOOLS & DEMO DATA
+    const resetForNextDay = () => {
+        setHabits(habits.map(h => ({ ...h, completedToday: false })));
+        alert("Simulated Next Day! All habits unticked.");
+    };
+
+    const hardReset = () => {
+        if (window.confirm("⚠️ Wipe all data and start over?")) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    };
+
+    const loadDemoData = () => {
+        if (window.confirm("📊 Inject Level 4 Demo Profile for presentation?")) {
+            const today = getTodayStr();
+            setHabits([
+                { id: 1, title: "Drink 2L Water", completedToday: true },
+                { id: 2, title: "Code for 1 Hour", completedToday: true },
+                { id: 3, title: "Read 10 Pages", completedToday: false }
+            ]);
+            setXp(650);
+            setGlobalStreak(12);
+            setLastActive(today);
+            alert("Demo profile loaded!");
+        }
+    };
 
     return (
         <div className="min-h-screen w-full bg-[#F8FAFC] text-slate-900 font-sans selection:bg-indigo-200 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:24px_24px]">
@@ -78,6 +128,22 @@ export default function App() {
                     {activeTab === 'habits' && <Habits habits={habits} toggleHabit={toggleHabit} addHabit={addHabit} />}
                     {activeTab === 'dashboard' && <Dashboard xp={xp} currentLevel={currentLevel} globalStreak={globalStreak} />}
                     {activeTab === 'arena' && <Arena xp={xp} />}
+
+                    {/* DEV / DEMO TOOLS MENU */}
+                    {activeTab === 'habits' && (
+                        <div className="mt-12 p-4 bg-slate-100 border border-slate-200 rounded-2xl flex flex-wrap gap-3 justify-center">
+                            <p className="w-full text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Developer Controls</p>
+                            <button onClick={resetForNextDay} className="active:scale-95 text-xs text-slate-600 bg-white hover:bg-slate-50 py-2 px-4 rounded-lg border border-slate-200 font-medium transition-all shadow-sm">
+                                Skip to Next Day
+                            </button>
+                            <button onClick={loadDemoData} className="active:scale-95 text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 py-2 px-4 rounded-lg border border-indigo-200 font-bold transition-all shadow-sm">
+                                Load Demo User
+                            </button>
+                            <button onClick={hardReset} className="active:scale-95 text-xs text-red-600 bg-red-50 hover:bg-red-100 py-2 px-4 rounded-lg border border-red-200 font-bold transition-all shadow-sm">
+                                Factory Reset
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* LIGHT DOCK: Indigo Theme */}

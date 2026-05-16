@@ -53,10 +53,10 @@ export default function Habits({ habits, toggleHabit, addHabit }) {
                 
                 {habits.map(habit => (
                     <div key={habit.id} onClick={() => toggleHabit(habit.id)} 
-                        className={`group relative p-5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${habit.completedToday ? 'bg-indigo-50/50 border-indigo-200 shadow-sm' : 'bg-white border-slate-200 shadow-sm'}`}>
+                        className={`active:scale-[0.98] group relative p-5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all duration-200 hover:shadow-md ${habit.completedToday ? 'bg-indigo-50/50 border-indigo-200 shadow-sm' : 'bg-white border-slate-200 shadow-sm'}`}>
                         
                         <div className="relative flex items-center gap-5 z-10 w-full">
-                            <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${habit.completedToday ? 'border-indigo-600 bg-indigo-600 shadow-md' : 'border-slate-300 bg-slate-50 group-hover:border-indigo-400'}`}>
+                            <div className={`active:scale-90 w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-200 ${habit.completedToday ? 'border-indigo-600 bg-indigo-600 shadow-md' : 'border-slate-300 bg-slate-50 group-hover:border-indigo-400'}`}>
                                 {habit.completedToday && (
                                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
