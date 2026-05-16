@@ -67,7 +67,7 @@ export default function Habits({ habits, toggleHabit, addHabit }) {
                                 )}
                             </div>
                             
-                            <span className={`text-lg font-medium tracking-wide transition-all duration-300 ${habit.completedToday ? 'text-slate-500 line-through decoration-slate-700 decoration-2' : 'text-slate-200 group-hover:text-white'}`}>
+                            <span className={`text-lg font-semibold tracking-wide transition-all duration-300 ${habit.completedToday ? 'text-slate-400 line-through decoration-slate-500 decoration-2' : 'text-slate-200 group-hover:text-white'}`}>
                                 {habit.title}
                             </span>
                         </div>
