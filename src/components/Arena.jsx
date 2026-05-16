@@ -1,4 +1,3 @@
-// src/components/Arena.jsx
 export default function Arena({ xp }) {
     const MOCK_USERS = [
         { name: 'AlexTheGreat', xp: 620 },
@@ -10,19 +9,19 @@ export default function Arena({ xp }) {
         .sort((a, b) => b.xp - a.xp);
 
     return (
-        <div className="animate-fade-in bg-slate-800 p-4 rounded-xl border border-slate-700">
-            <h2 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-4 flex justify-between">
+        <div className="animate-fade-in bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-5 flex justify-between">
                 <span>Global Arena</span>
-                <span className="text-emerald-500">Top 4</span>
+                <span className="text-indigo-600">Top 4</span>
             </h2>
             <div className="space-y-3">
                 {leaderboard.map((user, index) => (
-                    <div key={index} className={`flex justify-between items-center p-3 rounded-lg ${user.name === 'You' ? 'bg-slate-700 border border-slate-500' : 'bg-slate-900/50'}`}>
-                        <div className="flex items-center gap-3">
-                            <span className="text-slate-500 font-bold w-4">{index + 1}.</span>
-                            <span className={user.name === 'You' ? 'text-emerald-400 font-bold' : 'text-slate-200'}>{user.name}</span>
+                    <div key={index} className={`flex justify-between items-center p-4 rounded-2xl transition-all ${user.name === 'You' ? 'bg-indigo-50 border border-indigo-200 shadow-sm' : 'bg-slate-50 border border-slate-100'}`}>
+                        <div className="flex items-center gap-4">
+                            <span className={`font-black w-5 text-center ${user.name === 'You' ? 'text-indigo-500' : 'text-slate-400'}`}>{index + 1}.</span>
+                            <span className={`font-bold text-lg ${user.name === 'You' ? 'text-indigo-700' : 'text-slate-700'}`}>{user.name}</span>
                         </div>
-                        <span className="text-slate-400 text-sm font-mono">{user.xp} XP</span>
+                        <span className={`text-sm font-black font-mono ${user.name === 'You' ? 'text-indigo-600' : 'text-slate-500'}`}>{user.xp} XP</span>
                     </div>
                 ))}
             </div>

@@ -17,57 +17,54 @@ export default function Habits({ habits, toggleHabit, addHabit }) {
     return (
         <div className="animate-fade-in space-y-8">
             
-            {/* Status Bar */}
-            <div className={`flex items-center justify-between p-1 rounded-full border transition-all duration-500 ${isPerfectDay ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/5 border-white/5'}`}>
+            {/* Indigo Progress Bar */}
+            <div className={`flex items-center justify-between p-1.5 rounded-full border bg-white shadow-sm transition-all duration-500 ${isPerfectDay ? 'border-indigo-200 bg-indigo-50/50' : 'border-slate-200'}`}>
                 <div className="flex-1 px-4">
-                    <div className="w-full bg-black/50 rounded-full h-1.5 overflow-hidden">
-                        <div className={`h-full rounded-full transition-all duration-700 ${isPerfectDay ? 'bg-emerald-400 shadow-[0_0_10px_#34d399]' : 'bg-slate-500'}`} style={{ width: `${totalCount === 0 ? 0 : (completedCount / totalCount) * 100}%` }}></div>
+                    <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner">
+                        <div className={`h-full rounded-full transition-all duration-700 ${isPerfectDay ? 'bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]' : 'bg-slate-400'}`} style={{ width: `${totalCount === 0 ? 0 : (completedCount / totalCount) * 100}%` }}></div>
                     </div>
                 </div>
-                <div className={`px-4 py-1.5 rounded-full text-xs font-mono font-bold ${isPerfectDay ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-white/10 text-slate-400'}`}>
+                <div className={`px-4 py-1.5 rounded-full text-xs font-bold ${isPerfectDay ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
                     {completedCount} / {totalCount} PROTOCOLS
                 </div>
             </div>
 
-            {/* Command Palette Input */}
+            {/* Input Form */}
             <form onSubmit={handleSubmit} className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                <div className="relative flex items-center bg-[#0F0F0F] border border-white/10 rounded-2xl overflow-hidden shadow-2xl focus-within:border-emerald-500/50 transition-all">
-                    <div className="pl-6 pr-2 text-slate-500 font-mono text-xl">{'>'}</div>
+                <div className="relative flex items-center bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all duration-300">
+                    <div className="pl-6 pr-2 text-slate-400 font-mono text-xl">{'>'}</div>
                     <input 
                         type="text" value={input} onChange={(e) => setInput(e.target.value)}
                         placeholder="Initialize new protocol..." 
-                        className="flex-1 bg-transparent text-white px-3 py-5 focus:outline-none placeholder:text-slate-600 font-medium tracking-wide"
+                        className="flex-1 bg-transparent text-slate-900 px-3 py-5 focus:outline-none placeholder:text-slate-400 font-bold tracking-wide"
                     />
-                    <button type="submit" className="mr-3 bg-white/10 hover:bg-white/20 text-white font-mono text-xs px-4 py-2 rounded-lg transition-all duration-200">
+                    <button type="submit" className="mr-3 bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md">
                         ENTER ↵
                     </button>
                 </div>
             </form>
 
-            {/* List Array */}
             <div className="space-y-3">
                 {habits.length === 0 && (
-                    <div className="text-center py-16 bg-[#0F0F0F] rounded-2xl border border-white/5 border-dashed">
-                        <p className="text-slate-500 text-sm font-medium font-mono">NO PROTOCOLS DETECTED</p>
+                    <div className="text-center py-16 bg-white rounded-2xl border-2 border-slate-200 border-dashed">
+                        <p className="text-slate-400 text-sm font-bold tracking-widest">NO PROTOCOLS DETECTED</p>
                     </div>
                 )}
                 
                 {habits.map(habit => (
                     <div key={habit.id} onClick={() => toggleHabit(habit.id)} 
-                        className={`group relative p-5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${habit.completedToday ? 'bg-emerald-500/5 border-emerald-500/20 shadow-[0_10px_30px_rgba(16,185,129,0.05)]' : 'bg-[#0F0F0F] border-white/5 hover:border-white/10'}`}>
+                        className={`group relative p-5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${habit.completedToday ? 'bg-indigo-50/50 border-indigo-200 shadow-sm' : 'bg-white border-slate-200 shadow-sm'}`}>
                         
                         <div className="relative flex items-center gap-5 z-10 w-full">
-                            {/* Pro-Tier Checkbox */}
-                            <div className={`w-6 h-6 rounded-md border flex items-center justify-center transition-all duration-300 ${habit.completedToday ? 'border-emerald-500 bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'border-slate-700 bg-black group-hover:border-slate-500'}`}>
+                            <div className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${habit.completedToday ? 'border-indigo-600 bg-indigo-600 shadow-md' : 'border-slate-300 bg-slate-50 group-hover:border-indigo-400'}`}>
                                 {habit.completedToday && (
-                                    <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7"></path>
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 )}
                             </div>
                             
-                            <span className={`text-lg font-semibold tracking-wide transition-all duration-300 ${habit.completedToday ? 'text-slate-400 line-through decoration-slate-500 decoration-2' : 'text-slate-200 group-hover:text-white'}`}>
+                            <span className={`text-lg font-bold tracking-wide transition-all duration-300 ${habit.completedToday ? 'text-indigo-400 line-through decoration-indigo-300 decoration-2' : 'text-slate-700 group-hover:text-slate-900'}`}>
                                 {habit.title}
                             </span>
                         </div>
