@@ -18,7 +18,9 @@ export default function App() {
     const [xp, setXp] = useState(() => parseInt(localStorage.getItem('xp')) || 0);
     const [globalStreak, setGlobalStreak] = useState(() => parseInt(localStorage.getItem('globalStreak')) || 0);
     const [lastActive, setLastActive] = useState(() => localStorage.getItem('lastActive') || '');
-    const [activeTab, setActiveTab] = useState('habits');
+    const [activeTab, setActiveTab] = useState('habits');    
+    // 🌟 NEW: State to control the Level Up Alert
+    const [showLevelAlert, setShowLevelAlert] = useState(false);
 
     const currentLevel = getLevelData(xp);
     const prevLevelRef = useRef(currentLevel.level);
@@ -32,12 +34,21 @@ export default function App() {
 
     useEffect(() => {
         if (currentLevel.level > prevLevelRef.current) {
+            // 1. Fire Confetti
             confetti({
                 particleCount: 150,
                 spread: 80,
                 origin: { y: 0.6 },
-                colors: ['#4f46e5', '#8b5cf6', '#38bdf8'] // Indigo, Violet, Light Blue
+                colors: ['#4f46e5', '#8b5cf6', '#38bdf8'] 
             });
+            
+            // 2. Show Smooth Alert
+            setShowLevelAlert(true);
+            
+            // 3. Hide Alert after 4 seconds
+            setTimeout(() => {
+                setShowLevelAlert(false);
+            }, 4000);
         }
         prevLevelRef.current = currentLevel.level;
     }, [currentLevel.level]);
@@ -98,6 +109,20 @@ export default function App() {
     return (
         <div className="min-h-screen w-full bg-[#F8FAFC] text-slate-900 font-sans selection:bg-indigo-200 bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:24px_24px]">
             
+            {/* 🌟 NEW: SMOOTH LEVEL UP ALERT */}
+            <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[100] transition-all duration-700 cubic-bezier(0.34, 1.56, 0.64, 1) ${showLevelAlert ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-12 scale-90 pointer-events-none'}`}>
+                <div className="bg-white/95 backdrop-blur-xl border-2 border-indigo-500 px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(99,102,241,0.3)] flex items-center gap-5">
+                    <div className="bg-indigo-50 w-12 h-12 rounded-xl flex items-center justify-center border border-indigo-100">
+                        <span className="text-2xl animate-bounce">🏆</span>
+                    </div>
+                    <div>
+                        <p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-0.5">Achievement Unlocked</p>
+                        <p className="text-xl font-black text-slate-900">Level {currentLevel.level}: {currentLevel.title}</p>
+                    </div>
+                </div>
+            </div>
+            {/* 🌟 END ALERT */}
+
             <div className="max-w-2xl mx-auto w-full min-h-screen flex flex-col relative px-5 sm:px-0 pt-12 pb-32">
                 
                 {/* Header */}
