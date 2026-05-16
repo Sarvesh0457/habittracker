@@ -36,6 +36,7 @@ export default function Habits({ habits, toggleHabit, addHabit }) {
                     <input 
                         type="text" value={input} onChange={(e) => setInput(e.target.value)}
                         placeholder="Initialize new protocol..." 
+                        autoFocus
                         className="flex-1 bg-transparent text-slate-900 px-3 py-5 focus:outline-none placeholder:text-slate-400 font-bold tracking-wide"
                     />
                     <button type="submit" className="mr-3 bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all duration-200 shadow-md">
@@ -48,6 +49,7 @@ export default function Habits({ habits, toggleHabit, addHabit }) {
                 {habits.length === 0 && (
                     <div className="text-center py-16 bg-white rounded-2xl border-2 border-slate-200 border-dashed">
                         <p className="text-slate-400 text-sm font-bold tracking-widest">NO PROTOCOLS DETECTED</p>
+                        <p className="text-slate-400/70 text-xs mt-2 italic font-medium">"Motivation is what gets you started. Habit is what keeps you going."</p>
                     </div>
                 )}
                 
