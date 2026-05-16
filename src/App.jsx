@@ -20,89 +20,85 @@ export default function App() {
         localStorage.setItem('lastActive', lastActive);
     }, [habits, xp, globalStreak, lastActive]);
 
-    // The Untick Logic Fix
     const toggleHabit = (id) => {
-      const today = getTodayStr();
-
+        const today = getTodayStr();
         const updatedHabits = habits.map(habit => {
             if (habit.id === id) {
-                if (habit.completedToday) {
-                    // UNTICK: Revert progress
-                    setXp(prev => Math.max(0, prev - 50)); 
-                    return { ...habit, completedToday: false};
-                } else {
-                    // TICK: Add progress
-                    setXp(prev => prev + 50);
-                    return { ...habit, completedToday: true};
-                }
+                const isCompleting = !habit.completedToday;
+                setXp(prev => Math.max(0, prev + (isCompleting ? 50 : -50)));
+                return { ...habit, completedToday: isCompleting };
             }
             return habit;
         });
 
         const allCompletedNow = updatedHabits.length > 0 && updatedHabits.every(h => h.completedToday);
-
         if (allCompletedNow && lastActive !== today) {
-            // ALL habits are done! Streak goes up.
             setGlobalStreak(prev => prev + 1);
             setLastActive(today);
         } else if (!allCompletedNow && lastActive === today) {
-            // User unticked something, they no longer have 100% completion today. Revert streak.
             setGlobalStreak(prev => Math.max(0, prev - 1));
             setLastActive(''); 
         }
-
         setHabits(updatedHabits);
     };
 
-    const addHabit = (title) => {
-        const newHabit = { id: Date.now(), title, completedToday: false, streak: 0 };
-        setHabits([...habits, newHabit]);
-    };
-
-    const resetForNextDay = () => {
-        setHabits(habits.map(h => ({ ...h, completedToday: false })));
-        alert("Simulated Next Day! All habits unticked.");
-    };
-    
+    const addHabit = (title) => setHabits([...habits, { id: Date.now(), title, completedToday: false }]);
     const currentLevel = getLevelData(xp);
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white flex justify-center font-sans pb-24">
-            <div className="w-full max-w-md p-6 relative">
+        /* Hyper-modern dark theme wrapper with subtle grid background */
+        <div className="min-h-screen w-full bg-[#050505] text-slate-200 font-sans selection:bg-emerald-500/30 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]">
+            
+            {/* Centered Column for App Content */}
+            <div className="max-w-2xl mx-auto w-full min-h-screen flex flex-col relative px-5 sm:px-0 pt-12 pb-32">
                 
-                {/* Global Header */}
-                <div className="flex justify-between items-center mb-8 border-b border-slate-700 pb-5">
-                    <div>
-                        <h1 className="text-xl font-bold text-emerald-400">Lvl {currentLevel.level}: {currentLevel.title}</h1>
-                        <div className="flex items-center gap-2 mt-1 bg-slate-800 inline-flex px-3 py-1 rounded-full border border-slate-700">
-                            <span className="text-orange-500 text-sm">🔥</span>
-                            <span className="text-slate-200 text-sm font-bold">{globalStreak} Day Streak</span>
+                {/* Premium Header / Status Bar */}
+                <div className="flex justify-between items-end mb-10 pb-6 border-b border-white/10">
+                    <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.03)]">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span className="text-xs font-mono text-slate-300 tracking-wider">SYSTEM ONLINE</span>
                         </div>
+                        <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-white drop-shadow-md">
+                            Level <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">{currentLevel.level}</span>
+                        </h1>
+                        <p className="text-sm font-medium text-slate-500 uppercase tracking-widest">{currentLevel.title}</p>
                     </div>
-                    <div className="text-right">
-                        <span className="text-2xl font-black text-white tracking-tight">{xp}</span>
-                        <span className="text-emerald-500 text-xs ml-1 font-bold">XP</span>
+                    
+                    <div className="text-right flex flex-col items-end gap-2">
+                        <div className="flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 px-3 py-1.5 rounded-lg">
+                            <span className="text-orange-500 text-sm">🔥</span>
+                            <span className="text-orange-400 font-mono text-sm font-bold">{globalStreak} <span className="text-orange-500/50">DAYS</span></span>
+                        </div>
+                        <div className="text-3xl font-black tracking-tighter text-white">
+                            {xp} <span className="text-emerald-500 text-base font-bold uppercase tracking-widest">XP</span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Tabs */}
-                {activeTab === 'habits' && <Habits habits={habits} toggleHabit={toggleHabit} addHabit={addHabit} />}
-                {activeTab === 'dashboard' && <Dashboard xp={xp} currentLevel={currentLevel} globalStreak={globalStreak} />}
-                {activeTab === 'arena' && <Arena xp={xp} />}
+                {/* Main Content Area */}
+                <div className="flex-1 w-full z-10">
+                    {activeTab === 'habits' && <Habits habits={habits} toggleHabit={toggleHabit} addHabit={addHabit} />}
+                    {activeTab === 'dashboard' && <Dashboard xp={xp} currentLevel={currentLevel} globalStreak={globalStreak} />}
+                    {activeTab === 'arena' && <Arena xp={xp} />}
+                </div>
 
-                {/* Dev Mode Button (Remove before production) */}
-                {activeTab === 'habits' && (
-                    <button onClick={resetForNextDay} className="mt-8 w-full text-xs text-slate-500 underline text-center">
-                        Dev Mode: Simulate Next Day
-                    </button>
-                )}
-
-                {/* Bottom Navigation */}
-                <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex justify-center p-4 z-50">
-                    <div className="w-full max-w-md flex justify-around">
-                        <button onClick={() => setActiveTab('habits')} className={`px-4 py-2 rounded-xl font-bold transition-all ${activeTab === 'habits' ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500'}`}>Quests</button>
-                        <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 rounded-xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500'}`}>Journey</button>
-                        <button onClick={() => setActiveTab('arena')} className={`px-4 py-2 rounded-xl font-bold transition-all ${activeTab === 'arena' ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-500'}`}>Arena</button>
+                {/* Floating MacOS Style Dock (Responsive) */}
+                <div className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50 px-4">
+                    <div className="pointer-events-auto flex items-center gap-2 sm:gap-4 p-2 bg-[#0a0a0a]/80 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
+                        {[
+                            { id: 'habits', icon: '⌘', label: 'Quests' },
+                            { id: 'dashboard', icon: '∆', label: 'Journey' },
+                            { id: 'arena', icon: '⍟', label: 'Arena' }
+                        ].map(tab => (
+                            <button 
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)} 
+                                className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all duration-300 ${activeTab === tab.id ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'text-slate-500 hover:text-white hover:bg-white/5'}`}>
+                                <span className={`text-lg ${activeTab === tab.id ? 'text-black' : 'text-slate-600'}`}>{tab.icon}</span>
+                                <span className="text-sm tracking-wide">{tab.label}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
