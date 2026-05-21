@@ -78,6 +78,13 @@ export default function App() {
 
     const addHabit = (title) => setHabits([...habits, { id: Date.now(), title, completedToday: false }]);
 
+    // 🗑️ NEW: Delete Function
+    const deleteHabit = (id) => {
+        if (window.confirm("Abandon this protocol?")) {
+            setHabits(habits.filter(h => h.id !== id));
+        }
+    };
+
     // 🛠️ DEV TOOLS & DEMO DATA
     const resetForNextDay = () => {
         setHabits(habits.map(h => ({ ...h, completedToday: false })));
@@ -150,7 +157,7 @@ export default function App() {
                 </div>
 
                 <div className="flex-1 w-full z-10">
-                    {activeTab === 'habits' && <Habits habits={habits} toggleHabit={toggleHabit} addHabit={addHabit} />}
+                    {activeTab === 'habits' && <Habits habits={habits} toggleHabit={toggleHabit} addHabit={addHabit} deleteHabit={deleteHabit} />}
                     {activeTab === 'dashboard' && <Dashboard xp={xp} currentLevel={currentLevel} globalStreak={globalStreak} />}
                     {activeTab === 'arena' && <Arena xp={xp} />}
 
