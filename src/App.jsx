@@ -158,7 +158,7 @@ export default function App() {
 
                 <div className="flex-1 w-full z-10">
                     {activeTab === 'habits' && <Habits habits={habits} toggleHabit={toggleHabit} addHabit={addHabit} deleteHabit={deleteHabit} />}
-                    {activeTab === 'dashboard' && <Dashboard xp={xp} currentLevel={currentLevel} globalStreak={globalStreak} />}
+                    {activeTab === 'dashboard' && <Dashboard xp={xp} currentLevel={currentLevel} globalStreak={globalStreak} habits={habits}/>}
                     {activeTab === 'arena' && <Arena xp={xp} />}
 
                     {/* DEV / DEMO TOOLS MENU */}

@@ -1,6 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { generateOracleAdvice } from '../utils/aiService';
 
-export default function Dashboard({ xp, currentLevel, globalStreak }) {
+export default function Dashboard({ xp, currentLevel, globalStreak, habits}) {
+    const [oracleMessage, setOracleMessage] = useState("");
+    const [isOracleThinking, setIsOracleThinking] = useState(false);
+
     const progressPercent = ((xp - currentLevel.xpRequired) / (currentLevel.nextAt - currentLevel.xpRequired)) * 100;
 
     const gridDays = useMemo(() => {
@@ -12,8 +16,43 @@ export default function Dashboard({ xp, currentLevel, globalStreak }) {
         });
     }, [globalStreak]);
 
+    const consultOracle = async () => {
+        setIsOracleThinking(true);
+        const stats = { level: currentLevel.level, xp, streak: globalStreak, habits };
+        const message = await generateOracleAdvice(stats);
+        setOracleMessage(message);
+        setIsOracleThinking(false);
+    };
+
     return (
         <div className="animate-fade-in space-y-8">
+
+            <div className="bg-gradient-to-br from-indigo-600 to-violet-600 p-6 rounded-3xl shadow-lg relative overflow-hidden">
+                {/* Decorative background circle */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl"></div>
+                
+                <h2 className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <span>✨</span> The Arena Oracle
+                </h2>
+                
+                {oracleMessage ? (
+                    <div className="bg-black/20 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                        <p className="text-white font-medium leading-relaxed italic text-sm">{oracleMessage}</p>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-between">
+                        <p className="text-indigo-100 text-sm font-medium max-w-[200px]">Consult the Oracle for personalized quest guidance.</p>
+                        <button 
+                            onClick={consultOracle}
+                            disabled={isOracleThinking}
+                            className="active:scale-95 bg-white text-indigo-600 font-bold text-xs px-5 py-3 rounded-xl shadow-md transition-all disabled:opacity-70 disabled:animate-pulse"
+                        >
+                            {isOracleThinking ? "Consulting..." : "Seek Wisdom"}
+                        </button>
+                    </div>
+                )}
+            </div>
+
             <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
                 <h2 className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Progress to Lvl {currentLevel.level + 1}</h2>
                 <div className="w-full bg-slate-100 rounded-full h-4 mb-3 overflow-hidden shadow-inner">
