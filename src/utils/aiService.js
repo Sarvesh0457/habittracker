@@ -20,17 +20,17 @@ export const generateMicroHabits = async (goal) => {
     }
 };
 
-export const generateOracleAdvice = async (stats) => {
+export const generateMentorAdvice = async (stats) => {
     try {
-        const { level, xp, streak, habits } = stats;
-        const completedCount = habits.filter(h => h.completedToday).length;
+        const { level, xp, streak, habits = [] } = stats;
+        const completedCount = habits.filter(h => h && h.completedToday).length;
         
-        const prompt = `Act as a tough but encouraging video game coach. The player is Level ${level} with ${xp} XP and a ${streak}-day streak. Today, they have completed ${completedCount} out of ${habits.length} quests. Give them a 2-sentence motivational speech based on these exact stats. Be punchy, epic, and use gamer terminology (quests, grinding, leveling up). Do not use emojis.`;
+        const prompt = `Act as a wise, encouraging productivity mentor. The user is Level ${level} with ${xp} XP and a ${streak}-day consistency streak. Today, they have completed ${completedCount} out of ${habits.length} daily goals. Give them a 2-sentence motivational insight. Be crisp, inspiring, and acknowledge their specific stats. Do not use emojis.`;
         
         const result = await model.generateContent(prompt);
         return result.response.text();
     } catch (error) {
-        console.error("AI Error:", error);
-        return "The Oracle is currently meditating. Try again later.";
+        console.error("🚨 Mentor AI Error Details:", error);
+        return "The Mentor is currently analyzing your data. Please try again in a moment.";
     }
 };
