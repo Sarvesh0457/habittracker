@@ -19,8 +19,12 @@ export default async function handler(req, res) {
 
         // If the frontend asked for JSON (like the habits list), clean it up
         if (isJson) {
-            text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            return res.status(200).json(JSON.parse(text));
+            const match = text.match(/\[[\s\S]*\]/);
+            if (match) {
+                return res.status(200).json(JSON.parse(match[0]));
+            } else {
+                throw new Error("AI did not return an array.");
+            }
         }
 
         // Otherwise, send back the text (like the Mentor message)

@@ -7,11 +7,13 @@ export const generateMicroHabits = async (goal) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt, isJson: true }) // Tell backend we expect JSON
         });
+
+        if (!response.ok) throw new Error(`Server Error: ${response.status}`);
         
         return await response.json();
     } catch (error) {
         console.error("AI Service Error:", error);
-        return ["Failed to connect", "Check connection", "Try again"];
+        return ["AI is resting", "Try manually typing", "Check connection"];
     }
 };
 
@@ -27,6 +29,8 @@ export const generateMentorAdvice = async (stats) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ prompt, isJson: false }) // Tell backend we expect Text
         });
+
+        if (!response.ok) throw new Error(`Server Error: ${response.status}`);
         
         const data = await response.json();
         return data.text;
